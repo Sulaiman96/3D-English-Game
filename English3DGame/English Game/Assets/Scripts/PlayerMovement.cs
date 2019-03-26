@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour
     public float walkingSpeed = 0.05f;
     public float runningSpeed = 0.1f;
     public float rotationSpeed = 0.05f;
-
+    private bool answeringQuestions;
     Rigidbody rb;
     Animator anim;
     #endregion
@@ -23,6 +23,11 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+    }
+
+    private void FixedUpdate()
+    {
         var z = Input.GetAxis("Vertical") * speed;
         var y = Input.GetAxis("Horizontal") * rotationSpeed;
 
@@ -34,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
             speed = runningSpeed;
 
             //Running animation controls
-            if(Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S))
             {
                 anim.SetBool("Walking", false);
                 anim.SetBool("Idle", false);
@@ -66,5 +71,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         #endregion
+    }
+    public void PlayerStartedQuestions(bool val)
+    {
+        answeringQuestions = val;
     }
 }

@@ -15,7 +15,11 @@ public class GameController : MonoBehaviour
     public Transform answerButtonParent;
     public GameObject questionDisplay;
     public GameObject roundEndDisplay;
+    public GameObject prefab;
+    public Transform spawnPoint;
 
+    private GameObject ticket;
+    private PlayerMovement playerMovement;
     private DataController dataController;
     private RoundData currentRoundData;
     private QuestionData[] questionPool;
@@ -25,26 +29,22 @@ public class GameController : MonoBehaviour
     private int playerScore;
     private List<GameObject> answerButtonGameObjects = new List<GameObject>();
 
-    // Use this for initialization
-    void Start()
+    private void Start()
     {
+        playerMovement = FindObjectOfType<PlayerMovement>();
+        scoreDisplayText.GetComponent<TextMeshProUGUI>().enabled = false;
+        timeRemainingDisplayText.GetComponent<TextMeshProUGUI>().enabled = false;
         dataController = FindObjectOfType<DataController>();
-        currentRoundData = dataController.GetCurrentRoundData();
-        questionPool = currentRoundData.questions;
-        timeRemaining = currentRoundData.timeLimitInSeconds;
-        UpdateTimeRemainingDisplay();
 
-        playerScore = 0;
-        questionIndex = 0;
-
-        ShowQuestion();
-        isRoundActive = true;
+        //timeRemaining = currentRoundData.timeLimitInSeconds;
     }
 
     void Update()
     {
+
         if (isRoundActive)
         {
+            playerMovement.PlayerStartedQuestions(true);
             timeRemaining -= Time.deltaTime;
             UpdateTimeRemainingDisplay();
             if(timeRemaining <= 0f)
@@ -52,6 +52,28 @@ public class GameController : MonoBehaviour
                 EndRound();
             }
         }
+        playerMovement.PlayerStartedQuestions(false);
+    }
+
+    #region Functions
+    public void StartTheGame()
+    {
+        //Reset the score and its text
+        playerScore = 0;
+        scoreDisplayText.text = "Questions Correctly Answered: " + playerScore.ToString();
+        //Reset the question index so we start from the start again
+        questionIndex = 0;
+        currentRoundData = dataController.GetCurrentRoundData();
+        questionPool = currentRoundData.questions;
+        ShowQuestion();
+        //Enable the GUI for score and timer.
+        scoreDisplayText.GetComponent<TextMeshProUGUI>().enabled = true;
+        timeRemainingDisplayText.GetComponent<TextMeshProUGUI>().enabled = true;
+
+        //reset the time remaining and start the counter.
+        timeRemaining = currentRoundData.timeLimitInSeconds;
+        UpdateTimeRemainingDisplay();
+        isRoundActive = true;
     }
 
     private void UpdateTimeRemainingDisplay()
@@ -112,6 +134,13 @@ public class GameController : MonoBehaviour
 
         questionDisplay.SetActive(false);
         roundEndDisplay.SetActive(true);
+
+        if(playerScore >= 6) //give them the ticket.
+        {
+            ticket = Instantiate(prefab, spawnPoint) as GameObject;
+            ticket.transform.position = spawnPoint.position;
+        }
+
     }
 
     public void ReturnToGame()
@@ -121,4 +150,5 @@ public class GameController : MonoBehaviour
         scoreDisplayText.GetComponent<TextMeshProUGUI>().enabled = false;
         timeRemainingDisplayText.GetComponent<TextMeshProUGUI>().enabled = false;
     }
+    #endregion
 }

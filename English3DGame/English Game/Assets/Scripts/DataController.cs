@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class DataController : MonoBehaviour
 {
-    [SerializeField] RoundData[] allRoundData; //can extend for multiple rounds.
+    [SerializeField] public RoundData[] allRoundData; //can extend for multiple rounds.
 
     public RoundData GetCurrentRoundData() {
         return allRoundData[0];
